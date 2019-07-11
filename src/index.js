@@ -25,9 +25,15 @@ const typeDefs = `
     users: [User]!
   }
 
+  input UserInput {
+    name: String!
+    email: String!
+  }
+
   type Mutation {
     hello(name: String): Boolean
     createUser(name: String!, email: String!): User!
+    createUsers(users: [UserInput]!): [User]!
   }
 `
 
@@ -50,7 +56,32 @@ const resolvers = {
             return userCreated;
           }
            throw new Error("User already exist")
+      },
 
+      createUsers: async (_, args, ctx) => {
+        const users = args.users;
+        console.log(users)
+        let exists = false;
+
+        if (users.length === 0) return [];
+
+        let emails = [];
+
+
+
+        for (let i = 0; i <users.length; i++) {
+            exists = await  emails.includes(users[i].email) || ctx.models.User.exists({email: users[i].email});
+            emails.push(users[i].email);
+
+            if (exists) {
+                throw new Error("User already exist")
+                break;
+            }
+        }
+
+        const usersCreated = await ctx.models.User.create(users);
+
+        return usersCreated;
       }
   },
   User: {
