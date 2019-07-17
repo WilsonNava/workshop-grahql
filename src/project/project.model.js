@@ -1,0 +1,24 @@
+import mongoose from 'mongoose';
+
+const ProjectSchema = new mongoose.Schema({
+ name: {
+   required: true,
+   type: String
+ },
+ description: String,
+ team:{
+   type: String,
+   enum:[
+     'UI',
+     'QA',
+     'DESIGN',
+     'ADMIN'
+   ]
+ },
+ users: [{
+   type: mongoose.Schema.Types.ObjectId,
+   ref: 'User'
+ }]
+});
+
+export default mongoose.model('Project', ProjectSchema, 'projects');
